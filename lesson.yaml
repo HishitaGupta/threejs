@@ -1,0 +1,19 @@
+scene
+camera
+mesh ->geometry material
+renderer
+request animation frame
+
+
+on mesh->
+scale,rotation,position
+
+
+
+rotate - 180 =math.pi
+
+ window.requestAnimationFrame(animate);->jitni speed ho computer ki fps mein utni baar chalte rho
+
+ antialias:true->smooth lines
+
+  camera.updateProjectionMatrix();->to handle squuezing on increasing or decreading window size
