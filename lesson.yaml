@@ -17,3 +17,9 @@ rotate - 180 =math.pi
  antialias:true->smooth lines
 
   camera.updateProjectionMatrix();->to handle squuezing on increasing or decreading window size
+
+
+
+  r3f->react three fiber
+
+  mesh->needed for rendering geometry

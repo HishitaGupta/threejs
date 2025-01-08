@@ -1,42 +1,63 @@
-import * as THREE from "three";
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-
+// Scene setup
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
 
-const geometry = new THREE.BoxGeometry( 1, 1, 1 );
-const material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
-const cube = new THREE.Mesh( geometry, material );
-scene.add( cube );
+// Camera setup
+const camera = new THREE.PerspectiveCamera(
+  75, // Field of view
+  window.innerWidth / window.innerHeight, // Aspect ratio
+  0.1, // Near clipping plane
+  1000 // Far clipping plane
+);
+camera.position.set(0, 4, 3);
 
-camera.position.z = 5;
-camera.position.y = 2;
+// Renderer setup
+const canvas = document.querySelector('canvas');
+const renderer = new THREE.WebGLRenderer({canvas:canvas,antialias:true});
+renderer.setSize(window.innerWidth, window.innerHeight);
+// document.body.appendChild(renderer.domElement);
 
-const canvas = document.querySelector("canvas");
-const renderer = new THREE.WebGLRenderer({canvas:canvas , antialias:true});
-renderer.setSize( window.innerWidth, window.innerHeight );
-// document.body.appendChild( renderer.domElement );
+// Lighting
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+scene.add(ambientLight);
 
-let clock = new THREE.Clock();
+const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+directionalLight.position.set(5, 5, 5);
+scene.add(directionalLight);
 
-const controls = new OrbitControls(camera, renderer.domElement);
-controls.enableDamping = true;
-controls.dampingFactor = 0.05;
-controls.minDistance = 3;
-controls.maxDistance = 10;
+// Orbit Controls
+const controls = new THREE.OrbitControls(camera, renderer.domElement);
 
-window.addEventListener("resize",()=>{
-    renderer.setSize(window.innerWidth,window.innerHeight);
-    camera.aspect = window.innerWidth/window.innerHeight;
-    camera.updateProjectionMatrix();
-})
+// GLTFLoader to load the .glb model
+const loader = new THREE.GLTFLoader();
+loader.load(
+  "https://models.readyplayer.me/677d5c2321755451f0dd2981.glb", // Model URL
+  (gltf) => {
+    const model = gltf.scene;
+    model.scale.set(1.5, 1.5, 1.5); // Adjust the scale if needed
+    scene.add(model);
+  },
+  (xhr) => {
+    console.log(`Model ${((xhr.loaded / xhr.total) * 100).toFixed(2)}% loaded`);
+  },
+  (error) => {
+    console.error("An error occurred while loading the model", error);
+  }
+);
 
+// Handle window resizing
+window.addEventListener("resize", () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+// Animation loop
 function animate() {
-    window.requestAnimationFrame(animate);
-	renderer.render( scene, camera );
-    // cube.rotation.x += 0.01;
-    cube.rotation.y = clock.getElapsedTime();    
-    controls.update();
+  requestAnimationFrame(animate);
+  controls.update(); // For OrbitControls
+  renderer.render(scene, camera);
 }
-animate()
-// renderer.setAnimationLoop( animate );
+
+animate();
+
+
